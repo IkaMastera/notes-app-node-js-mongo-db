@@ -11,19 +11,14 @@ passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
     function (accessToken, refreshToken, profile, cb) {
-      UserActivation.findOrCreate(
-        { googleId: profile.id },
-        function (err, user) {
-          return cb(err, user);
-        }
-      );
+      console.log(profile);
     }
   )
 );
 
 router.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
+  passport.authenticate("google", { scope: ["email", "profile"] })
 );
 
 router.get(
@@ -36,6 +31,10 @@ router.get(
 
 router.get("/login-failure", (req, res) => {
   res.send("Something went wrong...");
+});
+
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
 });
 
 module.exports = router;
